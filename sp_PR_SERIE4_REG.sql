@@ -1,0 +1,12 @@
+CREATE OR REPLACE PROCEDURE PR_SERIE4_REG (
+    p_valor_final    IN NUMBER,
+    p_fecha_registro IN DATE
+) AS
+BEGIN
+    INSERT INTO SERIE4_LOG (ID_LOG, RESULTADO, FECHA_REGISTRO)
+    VALUES (SERIE4_LOG_SEQ.NEXTVAL, p_valor_final, p_fecha_registro);
+    COMMIT;
+END;
+/
+
+COMMIT;
