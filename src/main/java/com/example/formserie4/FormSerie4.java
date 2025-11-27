@@ -34,7 +34,42 @@ public class FormSerie4 extends JFrame  {
         add(btnGuardar);
         add(lblEstado);
 
-        //btnCalcular.addActionListener(this::generarSerie);
-        //btnGuardar.addActionListener(this::guardarEnBD);
+        btnCalcular.addActionListener(this::generarSerie);
+        btnGuardar.addActionListener(this::guardarEnBD);
     }
-}
+
+    private void generarSerie(ActionEvent e) {
+        resultadoFinal = 0;
+        StringBuilder serie = new StringBuilder();
+
+        for (int i = 0; i <= 3862; i += 4) {
+            resultadoFinal += i;
+            serie.append(i).append(",");
+        }
+        txtResultado.setText("Serie: " + serie + "\n\nSuma Total = " +  resultadoFinal);
+        lblEstado.setText("Estado: Serie generada ✔");
+    }
+
+    private void guardarEnBD(ActionEvent e) {
+        if (resultadoFinal == 0) {
+            lblEstado.setText("Debe generar la serie primero ❌");
+            return;
+        }
+        try (Connection conn = DriverManager.getConnection(connectionString, userDB, passDB)) {
+             String sql =  "{ call PR_SERIE4_REG(?, ?) }";
+             CallableStatement cs = conn.prepareCall(sql);
+             cs.setLong(1, resultadoFinal);
+             cs.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+             cs.execute();
+
+             lblEstado.setText("Datos guardados en oracle ✔");
+        } catch (Exception ex) {
+            lblEstado.setText("Error BD ❌");
+            ex.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new FormSerie4().setVisible(true));
+    }
+}   
